@@ -12,7 +12,7 @@ const navLinkClassName =
 
 const RootLayout = () => (
   <div className="flex min-h-dvh flex-col bg-background text-foreground">
-    <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
         <nav className="flex items-center gap-6">
           <Link to="/" className="text-sm font-semibold tracking-tight">
