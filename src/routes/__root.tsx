@@ -1,53 +1,43 @@
 import {
+  RedirectToSignIn,
   SignedIn,
-  SignedOut,
-  UserButton,
-} from "@neondatabase/neon-js/auth/react/ui";
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { Button } from "../components/ui/button";
+} from "@neondatabase/neon-js/auth/react/ui"
+import { Outlet, createRootRoute, useLocation } from "@tanstack/react-router"
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+import { AppSidebar } from "../components/app-sidebar"
 
-const navLinkClassName =
-  "text-muted-foreground transition-colors hover:text-foreground [&.active]:font-medium [&.active]:text-foreground";
+const RootLayout = () => {
+  const location = useLocation()
+  const isAuthRoute =
+    location.pathname.startsWith("/auth") ||
+    location.pathname.startsWith("/account")
 
-const RootLayout = () => (
-  <div className="flex min-h-dvh flex-col bg-background text-foreground">
-    <header className="border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
-        <nav className="flex items-center gap-6">
-          <Link to="/" className="text-sm font-semibold tracking-tight">
-            Shipping Manager
-          </Link>
-          <div className="flex items-center gap-4 text-sm">
-            <Link to="/" className={navLinkClassName} activeOptions={{ exact: true }}>
-              Inicio
-            </Link>
-            <Link to="/about" className={navLinkClassName}>
-              Acerca
-            </Link>
-          </div>
-        </nav>
-        <div className="flex items-center gap-2">
-          <SignedOut>
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link to="/auth/$pathname" params={{ pathname: "sign-in" }} />}
-            >
-              Iniciar sesión
-            </Button>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </div>
+  // Páginas de Neon Auth / Account: renderizan a pantalla completa sin sidebar.
+  if (isAuthRoute) {
+    return (
+      <div className="flex min-h-dvh flex-col bg-background text-foreground">
+        <Outlet />
+        <TanStackRouterDevtools />
       </div>
-    </header>
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-8">
-      <Outlet />
-    </main>
-    <TanStackRouterDevtools />
-  </div>
-);
+    )
+  }
 
-export const Route = createRootRoute({ component: RootLayout });
+  return (
+    <>
+      <SignedIn>
+        <div className="flex min-h-dvh flex-col bg-background text-foreground">
+          <div className="flex flex-1">
+            <AppSidebar />
+            <main className="flex-1 min-w-0 overflow-y-auto bg-background">
+              <Outlet />
+            </main>
+          </div>
+        </div>
+      </SignedIn>
+      <RedirectToSignIn />
+      <TanStackRouterDevtools position="bottom-right"/>
+    </>
+  )
+}
+
+export const Route = createRootRoute({ component: RootLayout })

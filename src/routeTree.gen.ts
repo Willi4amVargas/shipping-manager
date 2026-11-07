@@ -11,6 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ClientesRouteImport } from './routes/clientes'
+import { Route as ConfiguracionRouteImport } from './routes/configuracion'
+import { Route as OrdenesRouteImport } from './routes/ordenes'
+import { Route as PagosRouteImport } from './routes/pagos'
+import { Route as TiendasRouteImport } from './routes/tiendas'
 import { Route as AccountPathnameRouteImport } from './routes/account.$pathname'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 
@@ -22,6 +27,31 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientesRoute = ClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracionRoute = ConfiguracionRouteImport.update({
+  id: '/configuracion',
+  path: '/configuracion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdenesRoute = OrdenesRouteImport.update({
+  id: '/ordenes',
+  path: '/ordenes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagosRoute = PagosRouteImport.update({
+  id: '/pagos',
+  path: '/pagos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TiendasRoute = TiendasRouteImport.update({
+  id: '/tiendas',
+  path: '/tiendas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountPathnameRoute = AccountPathnameRouteImport.update({
@@ -38,12 +68,22 @@ const AuthPathnameRoute = AuthPathnameRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/clientes': typeof ClientesRoute
+  '/configuracion': typeof ConfiguracionRoute
+  '/ordenes': typeof OrdenesRoute
+  '/pagos': typeof PagosRoute
+  '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/clientes': typeof ClientesRoute
+  '/configuracion': typeof ConfiguracionRoute
+  '/ordenes': typeof OrdenesRoute
+  '/pagos': typeof PagosRoute
+  '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
 }
@@ -51,20 +91,58 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/clientes': typeof ClientesRoute
+  '/configuracion': typeof ConfiguracionRoute
+  '/ordenes': typeof OrdenesRoute
+  '/pagos': typeof PagosRoute
+  '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/account/$pathname' | '/auth/$pathname'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/clientes'
+    | '/configuracion'
+    | '/ordenes'
+    | '/pagos'
+    | '/tiendas'
+    | '/account/$pathname'
+    | '/auth/$pathname'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/account/$pathname' | '/auth/$pathname'
-  id: '__root__' | '/' | '/about' | '/account/$pathname' | '/auth/$pathname'
+  to:
+    | '/'
+    | '/about'
+    | '/clientes'
+    | '/configuracion'
+    | '/ordenes'
+    | '/pagos'
+    | '/tiendas'
+    | '/account/$pathname'
+    | '/auth/$pathname'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/clientes'
+    | '/configuracion'
+    | '/ordenes'
+    | '/pagos'
+    | '/tiendas'
+    | '/account/$pathname'
+    | '/auth/$pathname'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  ClientesRoute: typeof ClientesRoute
+  ConfiguracionRoute: typeof ConfiguracionRoute
+  OrdenesRoute: typeof OrdenesRoute
+  PagosRoute: typeof PagosRoute
+  TiendasRoute: typeof TiendasRoute
   AccountPathnameRoute: typeof AccountPathnameRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
 }
@@ -83,6 +161,41 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes': {
+      id: '/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof ClientesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracion': {
+      id: '/configuracion'
+      path: '/configuracion'
+      fullPath: '/configuracion'
+      preLoaderRoute: typeof ConfiguracionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ordenes': {
+      id: '/ordenes'
+      path: '/ordenes'
+      fullPath: '/ordenes'
+      preLoaderRoute: typeof OrdenesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pagos': {
+      id: '/pagos'
+      path: '/pagos'
+      fullPath: '/pagos'
+      preLoaderRoute: typeof PagosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tiendas': {
+      id: '/tiendas'
+      path: '/tiendas'
+      fullPath: '/tiendas'
+      preLoaderRoute: typeof TiendasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/$pathname': {
@@ -105,6 +218,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  ClientesRoute: ClientesRoute,
+  ConfiguracionRoute: ConfiguracionRoute,
+  OrdenesRoute: OrdenesRoute,
+  PagosRoute: PagosRoute,
+  TiendasRoute: TiendasRoute,
   AccountPathnameRoute: AccountPathnameRoute,
   AuthPathnameRoute: AuthPathnameRoute,
 }
