@@ -18,6 +18,7 @@ import { Route as PagosRouteImport } from './routes/pagos'
 import { Route as TiendasRouteImport } from './routes/tiendas'
 import { Route as AccountPathnameRouteImport } from './routes/account.$pathname'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
+import { Route as ClientesCustomerIdRouteImport } from './routes/clientes.$customerId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,40 +65,48 @@ const AuthPathnameRoute = AuthPathnameRouteImport.update({
   path: '/auth/$pathname',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClientesCustomerIdRoute = ClientesCustomerIdRouteImport.update({
+  id: '/$customerId',
+  path: '/$customerId',
+  getParentRoute: () => ClientesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/clientes': typeof ClientesRoute
+  '/clientes': typeof ClientesRouteWithChildren
   '/configuracion': typeof ConfiguracionRoute
   '/ordenes': typeof OrdenesRoute
   '/pagos': typeof PagosRoute
   '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/clientes/$customerId': typeof ClientesCustomerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/clientes': typeof ClientesRoute
+  '/clientes': typeof ClientesRouteWithChildren
   '/configuracion': typeof ConfiguracionRoute
   '/ordenes': typeof OrdenesRoute
   '/pagos': typeof PagosRoute
   '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/clientes/$customerId': typeof ClientesCustomerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/clientes': typeof ClientesRoute
+  '/clientes': typeof ClientesRouteWithChildren
   '/configuracion': typeof ConfiguracionRoute
   '/ordenes': typeof OrdenesRoute
   '/pagos': typeof PagosRoute
   '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/clientes/$customerId': typeof ClientesCustomerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/tiendas'
     | '/account/$pathname'
     | '/auth/$pathname'
+    | '/clientes/$customerId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/tiendas'
     | '/account/$pathname'
     | '/auth/$pathname'
+    | '/clientes/$customerId'
   id:
     | '__root__'
     | '/'
@@ -133,12 +144,13 @@ export interface FileRouteTypes {
     | '/tiendas'
     | '/account/$pathname'
     | '/auth/$pathname'
+    | '/clientes/$customerId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  ClientesRoute: typeof ClientesRoute
+  ClientesRoute: typeof ClientesRouteWithChildren
   ConfiguracionRoute: typeof ConfiguracionRoute
   OrdenesRoute: typeof OrdenesRoute
   PagosRoute: typeof PagosRoute
@@ -212,13 +224,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthPathnameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/clientes/$customerId': {
+      id: '/clientes/$customerId'
+      path: '/$customerId'
+      fullPath: '/clientes/$customerId'
+      preLoaderRoute: typeof ClientesCustomerIdRouteImport
+      parentRoute: typeof ClientesRoute
+    }
   }
 }
+
+interface ClientesRouteChildren {
+  ClientesCustomerIdRoute: typeof ClientesCustomerIdRoute
+}
+
+const ClientesRouteChildren: ClientesRouteChildren = {
+  ClientesCustomerIdRoute: ClientesCustomerIdRoute,
+}
+
+const ClientesRouteWithChildren = ClientesRoute._addFileChildren(
+  ClientesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  ClientesRoute: ClientesRoute,
+  ClientesRoute: ClientesRouteWithChildren,
   ConfiguracionRoute: ConfiguracionRoute,
   OrdenesRoute: OrdenesRoute,
   PagosRoute: PagosRoute,
