@@ -10,6 +10,8 @@
 
 App state: Home (auth-gated), About, `/auth/$pathname` (Neon `AuthView`) and `/account/$pathname` (Neon `AccountView`). No business features yet. `src/App.tsx` / `src/App.css` are dead template leftovers — `src/main.tsx` never imports them.
 
+Deployed at **https://shipping.widvu.com** (GitHub Pages, custom domain at the site root).
+
 ## Commands
 
 Use **pnpm** (`pnpm-lock.yaml` is the lockfile; no npm/yarn lockfiles).
@@ -60,6 +62,16 @@ There is **no test framework configured**. Quick verification loop is: `pnpm lin
 - Home is fully auth-gated by `<RedirectToSignIn />` outside `<SignedIn>`; remove it if the landing page must be public.
 - The Neon SDK makes the main chunk ~1.1 MB; the build's ">500 kB chunk" warning is expected, not a regression.
 
+## Deploy (GitHub Pages)
+
+- `.github/workflows/node.js.yml` deploys on every push to `master`: `pnpm install --frozen-lockfile` → `pnpm build` → `upload-pages-artifact` (`./dist`) → `deploy-pages`. Custom domain `https://shipping.widvu.com` is served at the **site root**, so Vite `base` stays the default `/` and emitted asset URLs are absolute (`/assets/...`).
+- GitHub Pages is static-only: **there are no SPA rewrites**. Any deep link (e.g. `/auth/sign-in`) returns HTTP 404. This matters because the Neon Auth SDK navigates with `window.location` (login button, post-login redirects).
+- Fix: `pagesSpaFallback()` in `vite.config.ts` copies the built `index.html` to `dist/404.html` from `closeBundle`. GitHub serves that file for every unmatched path, the app boots, and TanStack Router resolves the real `location.pathname`.
+  - **Never reintroduce the classic `?/` 404 redirect trick** (the old `public/404.html`). The app doesn't parse `?/...`, so `RedirectToSignIn` loops forever between `/?/auth/sign-in` and `/auth/sign-in`.
+  - Deep links responding **HTTP 404 with the app's HTML is expected** — don't "fix" it by switching to hash history (the SDK's full-page navigations use real pathnames).
+- Post-deploy check: `curl -s https://shipping.widvu.com/auth/sign-in | grep -c 'id="root"'` → `1`.
+- If real `200` statuses for deep links are ever required (SEO), move hosting to Cloudflare Pages / Netlify with `/* /index.html 200`.
+
 ## Toolchain quirks (easy to miss)
 
 - **TypeScript ~7.0** with project references: `tsconfig.json` is a root shell referencing `tsconfig.app.json` (src) and `tsconfig.node.json` (vite.config.ts). `tsc -b` requires the root file; don't invoke `tsc` on a leaf config.
@@ -77,5 +89,5 @@ There is **no test framework configured**. Quick verification loop is: `pnpm lin
 
 ## Repo state
 
-- Git repo initialized on branch `master` with **zero commits**; everything is still untracked.
+- Git repo on branch `master`, deployed to GitHub Pages on every push.
 - README is the unmodified Vite template README; trust `package.json` scripts as the source of truth.
