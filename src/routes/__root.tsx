@@ -4,7 +4,7 @@ import {
 } from "@neondatabase/neon-js/auth/react/ui"
 import { Outlet, createRootRoute, useLocation } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
-import { AppSidebar } from "../components/app-sidebar"
+import { AppSidebar, MobileAppHeader } from "../components/app-sidebar"
 
 const RootLayout = () => {
   const location = useLocation()
@@ -25,10 +25,11 @@ const RootLayout = () => {
   return (
     <>
       <SignedIn>
-        <div className="flex min-h-dvh flex-col bg-background text-foreground">
-          <div className="flex flex-1">
-            <AppSidebar />
-            <main className="flex-1 min-w-0 overflow-y-auto bg-background">
+        <div className="flex h-dvh overflow-hidden bg-background text-foreground">
+          <AppSidebar />
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <MobileAppHeader />
+            <main className="min-h-0 flex-1 overflow-y-auto bg-background">
               <Outlet />
             </main>
           </div>

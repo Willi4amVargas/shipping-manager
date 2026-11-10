@@ -8,7 +8,7 @@
 - **Tailwind CSS v4** + **shadcn/ui** (Base UI flavor, "base-nova" style)
 - **Neon Auth** (email OTP) + Neon Data API via `@neondatabase/neon-js`
 
-App state: Home (auth-gated), About, `/auth/$pathname` (Neon `AuthView`) and `/account/$pathname` (Neon `AccountView`). No business features yet. `src/App.tsx` / `src/App.css` are dead template leftovers — `src/main.tsx` never imports them.
+App state: Home (auth-gated), About, `/auth/$pathname` (Neon `AuthView`), `/account/$pathname` (Neon `AccountView`) and the business modules `/ordenes`, `/clientes`, `/pagos` and `/configuracion`. `src/App.tsx` / `src/App.css` are dead template leftovers — `src/main.tsx` never imports them.
 
 Deployed at **https://shipping.widvu.com** (GitHub Pages, custom domain at the site root).
 
@@ -39,7 +39,7 @@ There is **no test framework configured**. Quick verification loop is: `pnpm lin
 - Import order in `src/index.css` matters; keep Neon's Tailwind layer last:
   `tailwindcss` → `tw-animate-css` → `shadcn/tailwind.css` → `@fontsource-variable/noto-sans` → `@neondatabase/neon-js/ui/tailwind`.
 - Tailwind v4 has **no `tailwind.config`**; theme tokens live in `@theme inline` plus `:root` / `.dark` CSS vars in `index.css`.
-- `components.json`: style `base-nova`, base color olive, icon library lucide, CSS variables on. Only `src/components/ui/button.tsx` exists; add more with `pnpm exec shadcn add <component>`.
+- `components.json`: style `base-nova`, base color olive, icon library lucide, CSS variables on. `src/components/ui` currently includes button, input, label, select, dialog, sheet, badge, card, avatar, combobox, calendar, popover, input-group and textarea. Add more with `pnpm exec shadcn add <component>` and rewrite generated `@/...` imports to relative paths.
 - **This shadcn flavor is Base UI, not Radix** (`@base-ui/react`). There is no `asChild`:
   - compose with `render` + `nativeButton={false}` for links: `<Button nativeButton={false} render={<Link to="/auth/$pathname" params={{ pathname: "sign-in" }} />}>Iniciar sesión</Button>` (children on `Button` are preserved).
   - `buttonVariants` is exported if you prefer to style a link directly.
@@ -61,6 +61,16 @@ There is **no test framework configured**. Quick verification loop is: `pnpm lin
 - The SDK navigates with `window.location` (full page reloads) and takes a plain `pathname` string — that's why it works without a router adapter.
 - Home is fully auth-gated by `<RedirectToSignIn />` outside `<SignedIn>`; remove it if the landing page must be public.
 - The Neon SDK makes the main chunk ~1.1 MB; the build's ">500 kB chunk" warning is expected, not a regression.
+- `__root.tsx` owns the signed-in shell: fixed `h-dvh` viewport, desktop `AppSidebar`, and `MobileAppHeader` below `md`. Keep route pages scrollable inside `main`, not the document body.
+
+## Orders (`/ordenes`)
+
+- `settings.product_commission` is a **fixed amount per row** of `order_items`, not a percentage. `settings.stores` is a comma-separated string.
+- `orders.products_total` is the **number of order rows**, not the sum of quantities or subtotals. The merchandise sum is derived in the UI and is not stored.
+- `total_commission = products_total × product_commission`. `discount` is a percentage of `(merchandise_total + total_commission)`. `grand_total` subtracts that discount.
+- Customer search uses the shadcn Combobox with a 300 ms debounce and stale-response protection.
+- Saving inserts `orders`, recovers `order_id`, then inserts all `order_items`. If the details insert fails, the route deletes the just-created order to compensate (Neon Data API has no cross-table transaction here).
+- The form lives entirely inside the viewport (`h-dvh` shell); only the product list scrolls. Below `lg`, product rows render as stacked blocks instead of a table.
 
 ## Deploy (GitHub Pages)
 
@@ -76,6 +86,7 @@ There is **no test framework configured**. Quick verification loop is: `pnpm lin
 
 - **TypeScript ~7.0** with project references: `tsconfig.json` is a root shell referencing `tsconfig.app.json` (src) and `tsconfig.node.json` (vite.config.ts). `tsc -b` requires the root file; don't invoke `tsc` on a leaf config.
 - **React Compiler is enabled** via Babel in `vite.config.ts` (`@rolldown/plugin-babel` + `reactCompilerPreset`). This slows dev/build and requires React Rules compliance (stable hooks order, no side effects in render).
+- The date picker uses `react-day-picker` + `date-fns`. The shadcn Calendar is intentionally forced to 45 px day cells below `sm` so touch targets stay at least 44 px.
 - **Vite 8 is Rolldown-based** — that's why the Babel plugin is `@rolldown/plugin-babel`, not the classic `@vitejs/plugin-react` Babel/ESBuild options.
 - oxlint `react/only-export-components`: TanStack route files export `Route` + a component and will always warn. This is the accepted convention here (the template's `about.tsx` warns too) — don't "fix" it by splitting route files.
 - Static assets go in `public/` (e.g. `icons.svg` referenced by URL) or imported from `src/assets/`.
