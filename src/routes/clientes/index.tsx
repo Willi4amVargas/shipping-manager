@@ -1,26 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { neon } from "../lib/neon";
-import { Button } from "../components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../components/ui/dialog";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-import { Badge } from "../components/ui/badge";
 import {
   Search,
   Plus,
@@ -29,16 +9,35 @@ import {
   MoreHorizontal,
   MessageCircle,
   Eye,
-  X,
 } from "lucide-react";
 import { cn } from "cn";
+import { neon } from "../../lib/neon";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "../components/ui/sheet";
+} from "../../components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../components/ui/dialog";
+import { Label } from "../../components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 
 type Customer = {
   customer_id: number;
@@ -56,7 +55,7 @@ type CustomerStats = {
   balance_due: number;
 };
 
-export const Route = createFileRoute("/clientes")({
+export const Route = createFileRoute("/clientes/")({
   component: Clientes,
 });
 
@@ -278,9 +277,6 @@ function Clientes() {
             Total Clientes Registrados
           </div>
           <div className="text-2xl font-semibold">{stats.total}</div>
-          <div className="text-xs text-muted-foreground mt-1">
-            12 nuevos este mes
-          </div>
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="text-xs text-muted-foreground font-medium">
@@ -515,7 +511,9 @@ function Clientes() {
               <div className="p-4 space-y-4 overflow-y-auto flex-1">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Fecha de creación</span>
+                    <span className="text-muted-foreground">
+                      Fecha de creación
+                    </span>
                     <span>
                       {selectedCustomer.created_at
                         ? new Date(
@@ -557,7 +555,10 @@ function Clientes() {
                         e.stopPropagation();
                         setSelectedCustomer(null);
                         navigate({
-                          to: `/clientes/${selectedCustomer.customer_id}`,
+                          to: "/clientes/$customerId",
+                          params: {
+                            customerId: String(selectedCustomer.customer_id),
+                          },
                         });
                       }}
                     >

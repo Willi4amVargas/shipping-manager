@@ -39,7 +39,6 @@ const navItems: NavItem[] = [
     icon: Wallet,
     trailing: <span className="w-2 h-2 rounded-full bg-destructive" />,
   },
-  { to: "/tiendas", label: "Tiendas", icon: Store },
   { to: "/configuracion", label: "Configuración", icon: Settings },
 ]
 

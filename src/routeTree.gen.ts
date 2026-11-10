@@ -11,14 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
-import { Route as ClientesRouteImport } from './routes/clientes'
+import { Route as ClientesRouteRouteImport } from './routes/clientes/route'
 import { Route as ConfiguracionRouteImport } from './routes/configuracion'
 import { Route as OrdenesRouteImport } from './routes/ordenes'
 import { Route as PagosRouteImport } from './routes/pagos'
-import { Route as TiendasRouteImport } from './routes/tiendas'
 import { Route as AccountPathnameRouteImport } from './routes/account.$pathname'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
-import { Route as ClientesCustomerIdRouteImport } from './routes/clientes.$customerId'
+import { Route as ClientesIndexRouteImport } from './routes/clientes/index'
+import { Route as ClientesCustomerIdRouteImport } from './routes/clientes/$customerId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,7 +30,7 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ClientesRoute = ClientesRouteImport.update({
+const ClientesRouteRoute = ClientesRouteRouteImport.update({
   id: '/clientes',
   path: '/clientes',
   getParentRoute: () => rootRouteImport,
@@ -50,11 +50,6 @@ const PagosRoute = PagosRouteImport.update({
   path: '/pagos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TiendasRoute = TiendasRouteImport.update({
-  id: '/tiendas',
-  path: '/tiendas',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AccountPathnameRoute = AccountPathnameRouteImport.update({
   id: '/account/$pathname',
   path: '/account/$pathname',
@@ -65,96 +60,98 @@ const AuthPathnameRoute = AuthPathnameRouteImport.update({
   path: '/auth/$pathname',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClientesIndexRoute = ClientesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ClientesRouteRoute,
+} as any)
 const ClientesCustomerIdRoute = ClientesCustomerIdRouteImport.update({
   id: '/$customerId',
   path: '/$customerId',
-  getParentRoute: () => ClientesRoute,
+  getParentRoute: () => ClientesRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/clientes': typeof ClientesRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/clientes': typeof ClientesRouteWithChildren
   '/configuracion': typeof ConfiguracionRoute
   '/ordenes': typeof OrdenesRoute
   '/pagos': typeof PagosRoute
-  '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/clientes/$customerId': typeof ClientesCustomerIdRoute
+  '/clientes/': typeof ClientesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/clientes': typeof ClientesRouteWithChildren
   '/configuracion': typeof ConfiguracionRoute
   '/ordenes': typeof OrdenesRoute
   '/pagos': typeof PagosRoute
-  '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/clientes/$customerId': typeof ClientesCustomerIdRoute
+  '/clientes': typeof ClientesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/clientes': typeof ClientesRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/clientes': typeof ClientesRouteWithChildren
   '/configuracion': typeof ConfiguracionRoute
   '/ordenes': typeof OrdenesRoute
   '/pagos': typeof PagosRoute
-  '/tiendas': typeof TiendasRoute
   '/account/$pathname': typeof AccountPathnameRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/clientes/$customerId': typeof ClientesCustomerIdRoute
+  '/clientes/': typeof ClientesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/clientes'
+    | '/about'
     | '/configuracion'
     | '/ordenes'
     | '/pagos'
-    | '/tiendas'
     | '/account/$pathname'
     | '/auth/$pathname'
     | '/clientes/$customerId'
+    | '/clientes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/clientes'
     | '/configuracion'
     | '/ordenes'
     | '/pagos'
-    | '/tiendas'
     | '/account/$pathname'
     | '/auth/$pathname'
     | '/clientes/$customerId'
+    | '/clientes'
   id:
     | '__root__'
     | '/'
-    | '/about'
     | '/clientes'
+    | '/about'
     | '/configuracion'
     | '/ordenes'
     | '/pagos'
-    | '/tiendas'
     | '/account/$pathname'
     | '/auth/$pathname'
     | '/clientes/$customerId'
+    | '/clientes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ClientesRouteRoute: typeof ClientesRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  ClientesRoute: typeof ClientesRouteWithChildren
   ConfiguracionRoute: typeof ConfiguracionRoute
   OrdenesRoute: typeof OrdenesRoute
   PagosRoute: typeof PagosRoute
-  TiendasRoute: typeof TiendasRoute
   AccountPathnameRoute: typeof AccountPathnameRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
 }
@@ -179,7 +176,7 @@ declare module '@tanstack/react-router' {
       id: '/clientes'
       path: '/clientes'
       fullPath: '/clientes'
-      preLoaderRoute: typeof ClientesRouteImport
+      preLoaderRoute: typeof ClientesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/configuracion': {
@@ -203,13 +200,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PagosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tiendas': {
-      id: '/tiendas'
-      path: '/tiendas'
-      fullPath: '/tiendas'
-      preLoaderRoute: typeof TiendasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/account/$pathname': {
       id: '/account/$pathname'
       path: '/account/$pathname'
@@ -224,36 +214,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthPathnameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/clientes/': {
+      id: '/clientes/'
+      path: '/'
+      fullPath: '/clientes/'
+      preLoaderRoute: typeof ClientesIndexRouteImport
+      parentRoute: typeof ClientesRouteRoute
+    }
     '/clientes/$customerId': {
       id: '/clientes/$customerId'
       path: '/$customerId'
       fullPath: '/clientes/$customerId'
       preLoaderRoute: typeof ClientesCustomerIdRouteImport
-      parentRoute: typeof ClientesRoute
+      parentRoute: typeof ClientesRouteRoute
     }
   }
 }
 
-interface ClientesRouteChildren {
+interface ClientesRouteRouteChildren {
   ClientesCustomerIdRoute: typeof ClientesCustomerIdRoute
+  ClientesIndexRoute: typeof ClientesIndexRoute
 }
 
-const ClientesRouteChildren: ClientesRouteChildren = {
+const ClientesRouteRouteChildren: ClientesRouteRouteChildren = {
   ClientesCustomerIdRoute: ClientesCustomerIdRoute,
+  ClientesIndexRoute: ClientesIndexRoute,
 }
 
-const ClientesRouteWithChildren = ClientesRoute._addFileChildren(
-  ClientesRouteChildren,
+const ClientesRouteRouteWithChildren = ClientesRouteRoute._addFileChildren(
+  ClientesRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ClientesRouteRoute: ClientesRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  ClientesRoute: ClientesRouteWithChildren,
   ConfiguracionRoute: ConfiguracionRoute,
   OrdenesRoute: OrdenesRoute,
   PagosRoute: PagosRoute,
-  TiendasRoute: TiendasRoute,
   AccountPathnameRoute: AccountPathnameRoute,
   AuthPathnameRoute: AuthPathnameRoute,
 }
