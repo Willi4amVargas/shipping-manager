@@ -58,7 +58,10 @@ const NavItem = ({
   const isActive =
     item.to === "/"
       ? location.pathname === item.to
-      : location.pathname.startsWith(item.to)
+      : item.to === "/ordenes"
+        ? location.pathname.startsWith("/ordenes") ||
+          location.pathname === "/nueva-orden"
+        : location.pathname.startsWith(item.to)
 
   return (
     <Link

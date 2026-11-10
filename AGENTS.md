@@ -8,7 +8,7 @@
 - **Tailwind CSS v4** + **shadcn/ui** (Base UI flavor, "base-nova" style)
 - **Neon Auth** (email OTP) + Neon Data API via `@neondatabase/neon-js`
 
-App state: Home (auth-gated), About, `/auth/$pathname` (Neon `AuthView`), `/account/$pathname` (Neon `AccountView`) and the business modules `/ordenes`, `/clientes`, `/pagos` and `/configuracion`. `src/App.tsx` / `src/App.css` are dead template leftovers — `src/main.tsx` never imports them.
+App state: Home (auth-gated), About, `/auth/$pathname` (Neon `AuthView`), `/account/$pathname` (Neon `AccountView`) and the business modules `/ordenes` (list), `/ordenes/$orderId` (detail and edit), `/nueva-orden`, `/clientes`, `/pagos` and `/configuracion`. `src/App.tsx` / `src/App.css` are dead template leftovers — `src/main.tsx` never imports them.
 
 Deployed at **https://shipping.widvu.com** (GitHub Pages, custom domain at the site root).
 
@@ -41,8 +41,9 @@ There is **no test framework configured**. Quick verification loop is: `pnpm lin
 - Tailwind v4 has **no `tailwind.config`**; theme tokens live in `@theme inline` plus `:root` / `.dark` CSS vars in `index.css`.
 - `components.json`: style `base-nova`, base color olive, icon library lucide, CSS variables on. `src/components/ui` currently includes button, input, label, select, dialog, sheet, badge, card, avatar, combobox, calendar, popover, input-group and textarea. Add more with `pnpm exec shadcn add <component>` and rewrite generated `@/...` imports to relative paths.
 - **This shadcn flavor is Base UI, not Radix** (`@base-ui/react`). There is no `asChild`:
-  - compose with `render` + `nativeButton={false}` for links: `<Button nativeButton={false} render={<Link to="/auth/$pathname" params={{ pathname: "sign-in" }} />}>Iniciar sesión</Button>` (children on `Button` are preserved).
-  - `buttonVariants` is exported if you prefer to style a link directly.
+  - compose with `render` + `nativeButton={false}` for button-like controls: `<Button nativeButton={false} render={<Link to="/auth/$pathname" params={{ pathname: "sign-in" }} />}>Iniciar sesión</Button>` (children on `Button` are preserved).
+  - **For real navigation prefer `buttonVariants` on `Link`**, because Base UI sets `role="button"` on an anchor rendered through `Button`.
+  - `buttonVariants` is exported for styling links directly.
 - `cn` comes from the **`cn` npm package** (`src/lib/utils.ts` re-exports it); generated components import `cn` from `"cn"` directly.
 - **No path aliases are actually wired.** `@/...` is declared only in the root `tsconfig.json` and `components.json`; `tsconfig.app.json` / `tsconfig.node.json` don't extend the root and `vite.config.ts` has no `resolve.alias`. Use relative imports inside `src/` (or wire both Vite and TS first).
 
@@ -63,14 +64,18 @@ There is **no test framework configured**. Quick verification loop is: `pnpm lin
 - The Neon SDK makes the main chunk ~1.1 MB; the build's ">500 kB chunk" warning is expected, not a regression.
 - `__root.tsx` owns the signed-in shell: fixed `h-dvh` viewport, desktop `AppSidebar`, and `MobileAppHeader` below `md`. Keep route pages scrollable inside `main`, not the document body.
 
-## Orders (`/ordenes`)
+## Orders (`/ordenes`, `/nueva-orden`, `/ordenes/$orderId`)
 
 - `settings.product_commission` is a **fixed amount per row** of `order_items`, not a percentage. `settings.stores` is a comma-separated string.
 - `orders.products_total` is the **number of order rows**, not the sum of quantities or subtotals. The merchandise sum is derived in the UI and is not stored.
 - `total_commission = products_total × product_commission`. `discount` is a percentage of `(merchandise_total + total_commission)`. `grand_total` subtracts that discount.
 - Customer search uses the shadcn Combobox with a 300 ms debounce and stale-response protection.
-- Saving inserts `orders`, recovers `order_id`, then inserts all `order_items`. If the details insert fails, the route deletes the just-created order to compensate (Neon Data API has no cross-table transaction here).
-- The form lives entirely inside the viewport (`h-dvh` shell); only the product list scrolls. Below `lg`, product rows render as stacked blocks instead of a table.
+- Creating saves the order at `/nueva-orden`; the list lives at `/ordenes` and the detail/edit screen at `/ordenes/$orderId`. The status filter defaults to all orders and includes an `active` grouping (`pending` + `partially_paid`).
+- Payments are summarized by **original currency** (`payments.currency` + `original_amount`) so USD and VES never mix. Balance and credit use `base_amount`: `saldo = max(grand_total - paid_base, 0)` and `credit = max(paid_base - grand_total, 0)`.
+- Status is edited manually, not derived from payments. Overpayment is allowed and shown as a credit.
+- Creating inserts `orders`, recovers `order_id`, then inserts all `order_items`. If the details insert fails, the route deletes the just-created order to compensate (Neon Data API has no cross-table transaction here).
+- Editing snapshots the order, deletes removed items, updates existing items, inserts new ones, then updates `orders`. Any failure restores the snapshot and reloads the detail with a notice; this is compensation, not a database transaction.
+- Reusable order UI lives in `src/features/orders`. The creation and edit forms live entirely inside the viewport (`h-dvh` shell); only the product list scrolls. Below `lg`, their product rows render as stacked blocks. The order list switches from table to stacked rows below `xl` because the desktop sidebar leaves too little table width at intermediate sizes.
 
 ## Deploy (GitHub Pages)
 

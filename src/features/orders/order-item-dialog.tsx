@@ -80,6 +80,7 @@ export function OrderItemDialog({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    event.stopPropagation()
     setFormError("")
 
     if (!form.store || !stores.includes(form.store)) {
@@ -101,6 +102,7 @@ export function OrderItemDialog({
 
     onSave({
       draftId: item?.draftId ?? crypto.randomUUID(),
+      item_id: item?.item_id,
       store: form.store,
       product_url: form.productUrl.trim(),
       attachment_path: form.attachmentPath.trim(),
@@ -135,7 +137,11 @@ export function OrderItemDialog({
               </SelectTrigger>
               <SelectContent>
                 {stores.map((store) => (
-                  <SelectItem key={store} value={store}>
+                  <SelectItem
+                    key={store}
+                    value={store}
+                    className="min-h-11 sm:min-h-0"
+                  >
                     {store}
                   </SelectItem>
                 ))}

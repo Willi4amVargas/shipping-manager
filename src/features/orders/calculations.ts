@@ -1,7 +1,10 @@
 import type { OrderItemDraft, OrderTotals } from "./types"
 
-export const roundMoney = (value: number) =>
-  Math.round((value + Number.EPSILON) * 100) / 100
+export const roundMoney = (value: number) => {
+  const numeric = Number(value)
+  const safeValue = Number.isFinite(numeric) ? numeric : 0
+  return Math.round((safeValue + Number.EPSILON) * 100) / 100
+}
 
 export const itemSubtotal = (item: Pick<OrderItemDraft, "quantity" | "unit_price">) =>
   roundMoney(item.quantity * item.unit_price)
@@ -57,4 +60,12 @@ export const parseDecimal = (value: string) => {
   const normalized = value.trim().replace(",", ".")
   if (!normalized) return Number.NaN
   return Number(normalized)
+}
+
+export const getDiscountState = (value: string) => {
+  const discount = parseDecimal(value)
+  const hasValue = value.trim() !== ""
+  const valid =
+    hasValue && Number.isFinite(discount) && discount >= 0 && discount <= 100
+  return { discount, hasValue, valid, safeValue: valid ? discount : 0 }
 }
